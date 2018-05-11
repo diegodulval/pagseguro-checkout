@@ -17,12 +17,18 @@ import br.com.uol.pagseguro.api.common.domain.enums.Currency;
 import br.com.uol.pagseguro.api.common.domain.enums.PaymentMethodGroup;
 import br.com.uol.pagseguro.api.credential.Credential;
 import br.com.uol.pagseguro.api.http.JSEHttpClient;
+import br.com.uol.pagseguro.api.notification.NotificationsResource;
+import br.com.uol.pagseguro.api.notification.PagSeguroNotificationHandler;
 import br.com.uol.pagseguro.api.utils.Builder;
 import br.com.uol.pagseguro.api.utils.logging.SimpleLoggerFactory;
 import java.math.BigDecimal;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,7 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class PagSeguroResource {
 
-    private final String sellerEmail = "dulval@gmail.com";
+    private final String sellerEmail = "dulval@email.com";
     private final String sellerToken = "19548637EC994DF58E5A028D38CA1E58";
 
     @GetMapping("/payment")
@@ -77,12 +83,23 @@ public class PagSeguroResource {
                 .withQuantity(1);
     }
 
+    @CrossOrigin(origins = "https://sandbox.pagseguro.uol.com.br")
+    @PostMapping("/notification")
     public @ResponseBody
-    String registerNotify(
-            @RequestParam(value = "notificationCode") String nCode,
-            @RequestParam(value = "notificationType") String nType) {
+    ResponseEntity registerNotify(
+            HttpServletRequest request, HttpServletResponse response) {
 
-        return "lol";
+        final PagSeguro pagSeguro = PagSeguro
+                .instance(new SimpleLoggerFactory(), new JSEHttpClient(),
+                        getCredentials(), PagSeguroEnv.SANDBOX);
+
+        PagSeguroNotificationHandler nHandler = new PagSeguroNotificationHandlerImp();
+
+        NotificationsResource nResource = new NotificationsResource(pagSeguro, new JSEHttpClient());
+
+        nResource.handle(request, nHandler);
+
+        return ResponseEntity.ok(response);
     }
 
     private Credential getCredentials() {
@@ -95,8 +112,8 @@ public class PagSeguroResource {
                 //.withExtraAmount(BigDecimal.ONE) 
                 .withReference("CODE-TESTE")
                 .withSender(getSender())
-                .addItem(getItems())
-                .addPaymentMethodConfig(getPaymentMethodConfig());
+                .addItem(getItems());
+        //.addPaymentMethodConfig(getPaymentMethodConfig());
         //.withAcceptedPaymentMethods(getPaymentMethod())
 
     }
