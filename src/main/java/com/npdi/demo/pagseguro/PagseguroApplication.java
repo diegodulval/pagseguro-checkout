@@ -20,7 +20,7 @@ public class PagseguroApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        String appId = "your-id";
+        String appId = "dulval";
         String appKey = "378D72184949AD32244BCFA8DE4ED0B1";
 
         try {

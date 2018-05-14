@@ -1,6 +1,8 @@
 package com.npdi.demo.pagseguro.resources;
 
 import br.com.uol.pagseguro.api.application.authorization.search.AuthorizationDetail;
+import br.com.uol.pagseguro.api.common.domain.TransactionStatus;
+import br.com.uol.pagseguro.api.common.domain.TransactionType;
 import br.com.uol.pagseguro.api.notification.PagSeguroNotificationHandler;
 import br.com.uol.pagseguro.api.preapproval.search.PreApprovalDetail;
 import br.com.uol.pagseguro.api.transaction.search.TransactionDetail;
@@ -13,7 +15,13 @@ public class PagSeguroNotificationHandlerImp implements PagSeguroNotificationHan
 
     @Override
     public void handleTransactionNotification(TransactionDetail td) {
-        System.out.println(td);
+
+        TransactionType type = td.getType();
+        TransactionStatus status = td.getStatus();
+
+        System.out.println("STATUS = " + status.getStatus());
+
+        //System.out.println(td);
     }
 
     @Override
