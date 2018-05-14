@@ -1,20 +1,10 @@
 package com.npdi.demo.pagseguro.resources;
 
-import com.npdi.demo.pagseguro.services.PagSeguroNotificationHandlerImp;
 import br.com.uol.pagseguro.api.common.domain.DataList;
-import br.com.uol.pagseguro.api.common.domain.builder.DateRangeBuilder;
-import br.com.uol.pagseguro.api.common.domain.builder.PreApprovalBuilder;
-import br.com.uol.pagseguro.api.http.JSEHttpClient;
-import br.com.uol.pagseguro.api.notification.NotificationsResource;
-import br.com.uol.pagseguro.api.notification.PagSeguroNotificationHandler;
-import br.com.uol.pagseguro.api.preapproval.PreApprovalRegistrationBuilder;
-import br.com.uol.pagseguro.api.preapproval.RegisteredPreApproval;
 import com.npdi.demo.pagseguro.services.PagSeguroService;
-import java.math.BigDecimal;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -36,13 +26,22 @@ public class PagSeguroResource {
     @Autowired
     PagSeguroService service;
 
-    @GetMapping("/payment")
+    @GetMapping("/checkoutPreApproval")
     public @ResponseBody
-    String createCheckout(
+    String createPreApprovalCheckout(
             @RequestParam(value = "email", required = true) String email,
             @RequestParam(value = "plan", required = true) String plan
     ) {
-        return service.createPayment(email, plan);
+        return service.createCheckout(email, plan, "PREAP");
+    }
+
+    @GetMapping("/checkoutTransaction")
+    public @ResponseBody
+    String createTransactionCheckout(
+            @RequestParam(value = "email", required = true) String email,
+            @RequestParam(value = "plan", required = true) String plan
+    ) {
+        return service.createCheckout(email, plan, "TRANS");
     }
 
     @CrossOrigin(origins = "https://sandbox.pagseguro.uol.com.br")

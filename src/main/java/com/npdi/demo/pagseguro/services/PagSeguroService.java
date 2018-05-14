@@ -40,43 +40,32 @@ public class PagSeguroService {
     @Autowired
     private PagSeguro pagSeguro;
 
-    public String createPayment(String email, String plan) {
+    public String createCheckout(String email, String plan, String type) {
         try {
-
-            //Get user in database
-            //User user = userService.getUserByEmail(email);
-            String user = email; //mockup
-
             RegisteredCheckout registeredCheckout
                     = pagSeguro
                             .checkouts()
-                            .register(getCheckoutResources(user, plan));
+                            .register(registerCheckout(email, plan, type));
 
-            //user.setCheckout(registeredCheckout.getCheckoutCode())
-            //userService.save(user);
             return registeredCheckout.getRedirectURL();
         } catch (Exception ex) {
             return ex.getMessage();
         }
     }
 
-    public String registerPreApproval() {
-        try {
-            RegisteredPreApproval registeredPreApproval
-                    = pagSeguro
-                            .preApprovals()
-                            .register(
-                                    new PreApprovalRegistrationBuilder()
-                                            .withPreApproval(
-                                                    createPreApproval()
-                                            )
-                            );
+    private Builder<CheckoutRegistration> registerCheckout(String email, String plan, String type) {
+        CheckoutRegistrationBuilder check = new CheckoutRegistrationBuilder()
+                .withCurrency(Currency.BRL)
+                .withReference("TRAS-0001")
+                .withSender(getSender(email))
+                .addItem(getItems());
 
-            return registeredPreApproval.getPreApprovalCode();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
+        if ("PREAP".equals(type)) {
+            check.withPreApproval(instantiatePreApproval());
         }
+        //.addPaymentMethodConfig(getPaymentMethodConfig());
+        //.withAcceptedPaymentMethods(getPaymentMethod())
+        return check;
     }
 
     public String registerNotify(HttpServletRequest request) {
@@ -107,38 +96,23 @@ public class PagSeguroService {
 
         return new PaymentItemBuilder()
                 .withId("0001")
-                .withDescription("Produto #1")
-                .withAmount(new BigDecimal(99999.99))
+                .withDescription("PLANO BASICO - VCESTUDA")
+                .withAmount(new BigDecimal(10.99))
                 .withQuantity(1);
     }
 
-    private Builder<CheckoutRegistration> getCheckoutResources(String email, String plan) {
-
-        return new CheckoutRegistrationBuilder()
-                .withCurrency(Currency.BRL)
-                .withReference("CODE-TESTE")
-                .withSender(getSender(email))
-                .addItem(getItems())
-                .withPreApproval(createPreApproval());
-
-        //.addPaymentMethodConfig(getPaymentMethodConfig());
-        //.withAcceptedPaymentMethods(getPaymentMethod())
-    }
-
-    private PreApprovalBuilder createPreApproval() {
+    private PreApprovalBuilder instantiatePreApproval() {
 
         Calendar now = Calendar.getInstance();
         Calendar ends = Calendar.getInstance();
-        ends.add(Calendar.MONTH, 3);
+        ends.add(Calendar.MONTH, 1);
 
         return new PreApprovalBuilder()
                 .withCharge("manual")
                 .withName("BASIC - 3 Meses")
-                .withDetails("Cada dia 10 será cobrado o valor de R$10,00 referente ao plano basico ")
-                .withAmountPerPayment(BigDecimal.TEN)
-                .withMaxTotalAmount(new BigDecimal(200))
-                .withMaxAmountPerPeriod(BigDecimal.TEN)
-                .withMaxPaymentsPerPeriod(3)
+                .withDetails("Nos proximos 3 meses, serão debitados do seu cartão o valor de R$10,99 referente ao plano basico ")
+                .withAmountPerPayment(new BigDecimal(20))
+                .withMaxTotalAmount(new BigDecimal(20))
                 .withPeriod("monthly")
                 .withDateRange(new DateRangeBuilder()
                         .between(
@@ -180,4 +154,24 @@ public class PagSeguroService {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    public String registerPreApproval() {
+        try {
+            RegisteredPreApproval registeredPreApproval
+                    = pagSeguro
+                            .preApprovals()
+                            .register(
+                                    new PreApprovalRegistrationBuilder()
+                                            .withPreApproval(
+                                                    instantiatePreApproval()
+                                            )
+                            );
+
+            return registeredPreApproval.getPreApprovalCode();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
 }
