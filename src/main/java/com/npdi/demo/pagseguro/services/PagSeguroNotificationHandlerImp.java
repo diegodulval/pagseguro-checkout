@@ -1,4 +1,4 @@
-package com.npdi.demo.pagseguro.resources;
+package com.npdi.demo.pagseguro.services;
 
 import br.com.uol.pagseguro.api.application.authorization.search.AuthorizationDetail;
 import br.com.uol.pagseguro.api.common.domain.TransactionStatus;
