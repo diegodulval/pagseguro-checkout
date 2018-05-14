@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.npdi.demo.pagseguro.resources;
 
 import br.com.uol.pagseguro.api.application.authorization.search.AuthorizationDetail;
@@ -12,7 +7,7 @@ import br.com.uol.pagseguro.api.transaction.search.TransactionDetail;
 
 /**
  *
- * @author NPDI
+ * @author DD
  */
 public class PagSeguroNotificationHandlerImp implements PagSeguroNotificationHandler {
 
