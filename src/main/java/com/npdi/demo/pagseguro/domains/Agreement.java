@@ -57,7 +57,7 @@ public class Agreement implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy hh:mm", timezone = "GMT-3")
     private Date updatedAt;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "agrement")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "agreement")
     private List<Transaction> transactions = new ArrayList<>();
 
 }
