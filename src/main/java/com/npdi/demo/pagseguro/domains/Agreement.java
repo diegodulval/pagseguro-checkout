@@ -8,13 +8,17 @@ package com.npdi.demo.pagseguro.domains;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import lombok.Data;
 
@@ -52,5 +56,8 @@ public class Agreement implements Serializable {
     private Date createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy hh:mm", timezone = "GMT-3")
     private Date updatedAt;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "agrement")
+    private List<Transaction> transactions = new ArrayList<>();
 
 }
