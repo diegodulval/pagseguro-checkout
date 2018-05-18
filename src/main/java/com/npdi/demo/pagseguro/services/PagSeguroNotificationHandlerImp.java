@@ -21,7 +21,6 @@ public class PagSeguroNotificationHandlerImp implements PagSeguroNotificationHan
 
         System.out.println("STATUS = " + status.getStatus());
 
-        //System.out.println(td);
     }
 
     @Override
