@@ -48,6 +48,9 @@ public class PagSeguroService {
     @Autowired
     private AgreementRepository agreRepo;
 
+    @Autowired
+    private PagSeguroNotificationHandler nHandler;
+
     //Instancia uma instancia do Plano escolhido
     private PreApprovalRegistrationBuilder instantiatePreApproval(Plan plan) {
 
@@ -93,8 +96,6 @@ public class PagSeguroService {
 
     //Registra as notificações
     public String registerNotify(HttpServletRequest request) {
-
-        PagSeguroNotificationHandler nHandler = new PagSeguroNotificationHandlerImp();
 
         NotificationsResource nResource = new NotificationsResource(pagSeguro, new JSEHttpClient());
 

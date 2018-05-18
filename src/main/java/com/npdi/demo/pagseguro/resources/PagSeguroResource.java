@@ -53,7 +53,7 @@ public class PagSeguroResource {
         return ResponseEntity.ok(service.registerNotify(request));
     }
 
-    @GetMapping("signatures")
+    @PostMapping("signatures")
     public @ResponseBody
     Agreement signaturePreApproval(
             @RequestParam(value = "user", required = true) Long userId,
@@ -65,7 +65,7 @@ public class PagSeguroResource {
         return service.signaturePlan(plan, user);
     }
 
-    @GetMapping("plans")
+    @GetMapping("signatures")
     public @ResponseBody
     String searchPreApproval() {
         return service.searchPreApproval();
