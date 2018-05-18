@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AgreementRepository extends JpaRepository< Agreement, Long> {
 
-    //Plan findByCodeReference(String codeReference);
+    Agreement findByCodeReference(String codeReference);
 
 }
