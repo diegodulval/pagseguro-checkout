@@ -41,26 +41,26 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PagSeguroService {
-
+    
     @Autowired
     private PagSeguro pagSeguro;
-
+    
     @Autowired
     private AgreementRepository agreRepo;
-
+    
     @Autowired
     private PagSeguroNotificationHandler nHandler;
 
     //Instancia uma instancia do Plano escolhido
     private PreApprovalRegistrationBuilder instantiatePreApproval(Plan plan) {
-
+        
         PreApproval preApproval = new PreApprovalBuilder()
                 .withCharge("AUTO")
                 .withPeriod(plan.getPeriod())
                 .withAmountPerPayment(plan.getPrice())
                 .withName(plan.getName())
                 .build();
-
+        
         return new PreApprovalRegistrationBuilder()
                 .withCurrency(Currency.BRL)
                 .withPreApproval(preApproval)
@@ -75,7 +75,7 @@ public class PagSeguroService {
                     = pagSeguro
                             .checkouts()
                             .register(registerCheckout(email, plan));
-
+            
             return registeredCheckout.getRedirectURL();
         } catch (Exception ex) {
             return ex.getMessage();
@@ -96,11 +96,11 @@ public class PagSeguroService {
 
     //Registra as notificações
     public String registerNotify(HttpServletRequest request) {
-
+        
         NotificationsResource nResource = new NotificationsResource(pagSeguro, new JSEHttpClient());
-
+        
         nResource.handle(request, nHandler);
-
+        
         return "1";
     }
 
@@ -113,7 +113,7 @@ public class PagSeguroService {
                 .withPhone(new PhoneBuilder()
                         .withAreaCode("99")
                         .withNumber("99999999"));
-
+        
         return sender;
     }
 
@@ -125,7 +125,7 @@ public class PagSeguroService {
                 .withAmount(new BigDecimal(10.99))
                 .withQuantity(1);
     }
-
+    
     private AcceptedPaymentMethodsBuilder getPaymentMethod() {
         return new AcceptedPaymentMethodsBuilder()
                 .addInclude(new PaymentMethodBuilder()
@@ -135,7 +135,7 @@ public class PagSeguroService {
                         .withGroup(PaymentMethodGroup.BANK_SLIP)
                 );
     }
-
+    
     private PaymentMethodConfigBuilder getPaymentMethodConfig() {
         return new PaymentMethodConfigBuilder()
                 .withPaymentMethod(new PaymentMethodBuilder()
@@ -150,16 +150,16 @@ public class PagSeguroService {
     //Cria plano especializado para cada cliente
     public Agreement signaturePlan(Plan plan, User user) {
         try {
-
+            
             String code = "PP-" + user.getId().toString() + "-" + plan.getId().toString();
-
+            
             RegisteredPreApproval registeredPreApproval
                     = pagSeguro
                             .preApprovals()
                             .register(
                                     instantiatePreApproval(plan)
                                             .withReference(code));
-
+            
             Agreement agre = new Agreement();
             agre.setCodeReference(code);
             agre.setCodePreApproval(registeredPreApproval.getPreApprovalCode());
@@ -167,16 +167,17 @@ public class PagSeguroService {
             agre.setStatus("PENDING");
             agre.setCreatedAt(new Date());
             agre.setUpdatedAt(new Date());
+            agre.setAmmount(plan.getPrice());
             agre.setRedirectURL(registeredPreApproval.getRedirectURL());
-
+            
             return agreRepo.save(agre);
-
+            
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
-
+    
     public String searchPreApproval() {
         try {
             // Busca de assinaturas
@@ -187,7 +188,7 @@ public class PagSeguroService {
                     1,
                     10
             );
-
+            
             System.out.println(dataList);
             return "";
         } catch (Exception e) {

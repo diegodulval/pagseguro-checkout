@@ -8,6 +8,7 @@ package com.npdi.demo.pagseguro.domains;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +40,7 @@ public class Agreement implements Serializable {
     private Date startDate;
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date finalDate;
-
+    private BigDecimal ammount;
     private String status;
 
     @ManyToOne
